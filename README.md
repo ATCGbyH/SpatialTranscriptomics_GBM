@@ -1,1 +1,1 @@
-# Spatial Transcriptomics Analysis of Human Glioblastoma (GBM) FFPE Tissue
+# Spatial Transcriptomics Analysis: Human Glioblastoma (GBM) FFPE Tissue
