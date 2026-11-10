@@ -1,4 +1,4 @@
-# Spatial Transcriptomics - Seurat Analysis of Human Glioblastoma (GBM)
+# Spatial Transcriptomics - Seurat Analysis of Human Glioblastoma (GBM) FFPE Tissue
 
 A Seurat analysis of 10x Visium CytAssist data from a human glioblastoma (GBM) tissue section. 
 I mapped transcriptional clusters onto the H&E image and compared where collagen, hypoxia and other gene programs were expressed.
