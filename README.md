@@ -24,6 +24,14 @@ The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profi
 
 ## Findings and interpretation
 
+## From tissue to clusters
+
+![H&E histology, spatial cluster map and UMAP of Visium spots](GBM_Tissue_to_Clusters.png)
+
+Seurat identified **21 clusters across 10,878 tissue-covered Visium spots**. The spatial map shows where the clusters occur on the H&E section, while the UMAP arranges the same spots by gene expression. Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and sit close together on the UMAP. Cluster 12 lies mainly on the right side of the section and separates from both on the UMAP.
+
+*H&E and Visium data from [10x Genomics](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
+
 ### Collagen enrichment and hypoxia
 
 Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement in gene rankings based on cluster-average SCT residuals (Spearman ρ = 0.571). High scores for a hypoxia-associated panel that included *CA9*, *VEGFA* and *HILPDA* overlapped cluster 7.
