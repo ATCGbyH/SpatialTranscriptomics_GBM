@@ -10,7 +10,9 @@ The notebook contains the complete analysis and figures. For a local preview, do
 
 ## Dataset
 
-The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profiled on an 11 mm Visium CytAssist capture area. The filtered Space Ranger 2.0.1 output yielded **18,085 features across 10,878 tissue-covered spots** in Seurat. The dataset is available under CC BY 4.0. [10x Genomics dataset and downloads](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard)
+The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profiled on an 11 mm Visium CytAssist capture area. The filtered Space Ranger 2.0.1 output yielded **18,085 features across 10,878 tissue-covered spots** in Seurat. 
+
+*H&E and Visium data from [10x Genomics](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
 
 <img src="https://i.postimg.cc/Pfgp3HqS/GBM-QC-n-Count-Spatial.png" height="80%" width="80%" alt="Workflow Chart"/>
 
@@ -26,11 +28,10 @@ The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profi
 
 ## From tissue to clusters
 
-![H&E histology, spatial cluster map and UMAP of Visium spots](GBM_Tissue_to_Clusters.png)
+<img src="https://i.postimg.cc/d3w382vk/GBM-Tissue-to-Clusters.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 Seurat identified **21 clusters across 10,878 tissue-covered Visium spots**. The spatial map shows where the clusters occur on the H&E section, while the UMAP arranges the same spots by gene expression. Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and sit close together on the UMAP. Cluster 12 lies mainly on the right side of the section and separates from both on the UMAP.
 
-*H&E and Visium data from [10x Genomics](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
 
 ### Collagen enrichment and hypoxia
 
