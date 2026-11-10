@@ -4,7 +4,7 @@ This project uses 10x Visium CytAssist and Seurat to map gene expression across 
 
 [Open the R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/R_notebook.pdf) · [View the R Markdown source](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.Rmd)
 
-The notebook contains the complete analysis and figures. For a local preview, download and open [HTML R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_GBM/blob/main/notebook.html) in a browser.
+The notebook contains the complete analysis and figures. For a local preview, download and open [HTML R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/notebook.html) in a browser.
 
 ## Dataset
 
