@@ -56,9 +56,13 @@ Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for monoc
 
 *KIF5A* showed the opposite pattern. Its mean SCT residual was +1.80 in cluster 12 and negative in both clusters 1 and 14. Given the role of *KIF5A* in axonal transport, this pattern is compatible with a greater neuronal RNA contribution in cluster 12 (Guerra San Juan et al., 2024). Joyce and Lindsay (2024) also reported an inverse association between *KIF5A* expression and glioma grade in a separate cohort analysis.
 
+This could be a good explanation on why these clusters present such high similarity but also, somewhat dissimilar, with a high chance of a GBM tumour slowly forming within cluster 1 and 14, while cluster 12 cells demonstrate to be closely within healthy states.
+
+Another major factor that may indicate this is the highly expression of CD14 and CD163 cells within cluster 1 and 14, indicating direct activity of immune system in this region and possibly part of a forming GBM. 
+
 The three clusters therefore had similar myelin module scores within the *MBP*-high subset, alongside differences in myeloid- and neuronal-associated signals across their broader spot profiles. These differences could reflect variation in the cell types captured by each Visium spot, changes in their transcriptional states, or both.
 
-<img src="missing an image here" height="80%" width="80%" alt="Workflow Chart"/>
+<img src="https://i.postimg.cc/br5QLVvb/GBM-Cluster-12-Comparison.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 These differences could reflect variation in cell composition or transcriptional state across Visium spots. Histology and tumour-associated copy-number profiles would help assess whether the myelin-rich regions also differ in local tumour infiltration.
 
