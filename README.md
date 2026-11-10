@@ -4,7 +4,7 @@ A Seurat analysis of 10x Visium CytAssist data from a human glioblastoma (GBM) t
 
 [Project page](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/) · [Analysis notebook](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/notebook.html) · [R Markdown source](docs/GBM_Spatial_Seurat.Rmd)
 
-![UMAP embedding and H&E tissue image with the same 21 colour-coded spot clusters](docs/assets/spot-clusters.png)
+![UMAP embedding and H&E tissue image with the same 21 colour-coded spot clusters](https://i.postimg.cc/xjmtZst9/GBM-Annotated-Spatial-Map.png)
 
 ## Key observations
 
