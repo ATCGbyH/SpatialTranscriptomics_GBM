@@ -33,5 +33,3 @@ Open `docs/index.html` locally to view the project page, or `docs/notebook.html`
 1. Use R with Seurat v5. The source loads `SeuratData`, `hdf5r`, `Rfast2`, `dplyr`, `ggplot2`, `patchwork`, `pheatmap`, `htmltools` and `vembedr`. Use `rmarkdown` and `knitr` to render the notebook. [Seurat installation guide](https://satijalab.org/seurat/articles/install_v5.html)
 2. Download the filtered feature-barcode HDF5 matrix and spatial imaging archive from 10x Genomics. Save the matrix as `data/filtered_feature_bc_matrix.h5` and extract the images, coordinates and scale factors into `data/spatial/`.
 3. Place `data/` beside the `.Rmd` file or set `data_dir` to its location. Run the notebook chunks in order.
-
-*Analysis by Hugo Roca.*
