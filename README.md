@@ -51,7 +51,7 @@ Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG
 | 12 and 1 | 0.457 | 0.493 |
 | 12 and 14 | 0.434 | 0.468 |
 
-Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) · [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/) 
+Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12.
 
 <img src="missing an image here" height="80%" width="80%" alt="Workflow Chart"/>
 
@@ -62,5 +62,10 @@ These differences could reflect variation in cell composition or transcriptional
 1. Use R with Seurat v5 and install the packages loaded by the notebook, including `SeuratData`, `hdf5r`, `Rfast2`, `dplyr`, `ggplot2`, `patchwork`, `pheatmap`, `htmltools` and `vembedr`. Use `rmarkdown` and `knitr` to render the notebook. [Seurat installation guide](https://satijalab.org/seurat/articles/install_v5.html)
 2. Download the filtered feature-barcode matrix and spatial imaging archive from 10x Genomics. Place the matrix at `data/filtered_feature_bc_matrix.h5` and extract the images, coordinates and scale factors into `data/spatial/`.
 3. Place `data/` beside the R Markdown file or update `data_dir` to point to the input folder. Run the chunks in order.
+
+## References
+
+· [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) 
+· [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/) 
 
 *Analysis by Hugo Roca*
