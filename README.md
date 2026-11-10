@@ -52,7 +52,11 @@ Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG
 | 12 and 1 | 0.457 | 0.493 |
 | 12 and 14 | 0.434 | 0.468 |
 
-Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. 
+Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for monocyte- and macrophage-associated genes (*CD14*, *CD163*) and complement-associated genes (*C1QA*, *VSIG4*). For example, the mean *CD163* residual was −1.67 in cluster 12, compared with +2.64 in cluster 1 and +3.12 in cluster 14. The agreement across these genes is consistent with a stronger myeloid-associated RNA signal in clusters 1 and 14 (Miller et al., 2025).
+
+*KIF5A* showed the opposite pattern. Its mean SCT residual was +1.80 in cluster 12 and negative in both clusters 1 and 14. Given the role of *KIF5A* in axonal transport, this pattern is compatible with a greater neuronal RNA contribution in cluster 12 (Guerra San Juan et al., 2024). Joyce and Lindsay (2024) also reported an inverse association between *KIF5A* expression and glioma grade in a separate cohort analysis.
+
+The three clusters therefore had similar myelin module scores within the *MBP*-high subset, alongside differences in myeloid- and neuronal-associated signals across their broader spot profiles. These differences could reflect variation in the cell types captured by each Visium spot, changes in their transcriptional states, or both.
 
 <img src="missing an image here" height="80%" width="80%" alt="Workflow Chart"/>
 
@@ -70,7 +74,6 @@ These differences could reflect variation in cell composition or transcriptional
 
 · Miller, T.E. et al. (2025) ‘Programs, origins and immunomodulatory functions of myeloid cells in glioma’, Nature, 640(8060), pp. 1072–1082. doi:10.1038/s41586-025-08633-8. 
 
-*Analysis by Hugo Roca*
+· Guerra San Juan, I. et al. (2024) Kif5a regulates axonal repair and time-dependent axonal transport of SFPQ granules and mitochondria in human motor neurons [Preprint]. doi:10.1101/2024.09.06.611684. 
 
-(Joyce & Lindsay, 2024)
-(Miller et al., 2025)
+*Analysis by Hugo Roca*
