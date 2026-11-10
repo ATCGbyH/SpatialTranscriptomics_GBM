@@ -1,0 +1,611 @@
+---
+title: "Spatial Transcriptomics of Human Glioblastoma"
+output: html_notebook
+---
+
+# Setting up environment for Spatial Analysis
+
+```{r setup, include=FALSE}
+options(future.globals.maxSize = 1024^3 * 10) # 10 GB
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- res
+    }
+  }
+}))
+knitr::opts_chunk$set(
+  tidy = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  time_it = TRUE,
+  error = TRUE,
+  dpi=150
+)
+```
+
+# Packages/Dependencies
+
+```{r install}
+library(Seurat)
+library(SeuratData)
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+library(Rfast2)
+```
+
+```{r libraries.for.rmd, echo = FALSE}
+library("htmltools")
+library("vembedr")
+```
+
+# Loading 10x Visium Dataset
+
+```{r data.install, message=FALSE, warning=FALSE}
+
+data_dir <- "data"
+
+list.files(data_dir)
+
+library(hdf5r)
+
+GBM <- Load10X_Spatial(data.dir = data_dir)
+
+GBM
+
+```
+
+# Data preprocessing
+
+```{r qc, fig.height=5}
+plot1 <- VlnPlot(GBM, features = "nCount_Spatial", pt.size = 0.1) + NoLegend()
+
+plot2 <- SpatialFeaturePlot(GBM, features = "nCount_Spatial", pt.size.factor = 2.5) + theme(legend.position = "right")
+
+wrap_plots(plot1, plot2)
+```
+
+## Spatial Normalisation
+
+```{r normalise}
+GBM <- SCTransform(GBM, assay = "Spatial", verbose = FALSE)
+```
+
+# Gene expression visualisation
+
+```{r}
+features <- rownames(GBM)
+
+features
+
+## Sanity check 
+'ATG5' %in% features
+```
+
+## Visualisation of 4 Genes
+
+```{r featureplot}
+SpatialFeaturePlot(GBM, features = c("HPCA", 'IDH1', 'IDH2', 'PPP1R1B'))
+
+```
+
+```{r}
+SpatialFeaturePlot(
+  GBM,
+  features = c('IDH1'),
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 2,
+  image.scale = "lowres",
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+)
+```
+
+# Dimensionality reduction, clustering
+
+```{r dim.cluster}
+GBM <- RunPCA(GBM, assay = "SCT", verbose = FALSE)
+GBM <- FindNeighbors(GBM, reduction = "pca", dims = 1:30)
+GBM <- FindClusters(GBM, verbose = FALSE)
+GBM <- RunUMAP(GBM, reduction = "pca", dims = 1:30)
+```
+## Visualisation
+```{r dim.plots,fig.height=5}
+p1 <- DimPlot(GBM, reduction = "umap", label = TRUE) 
+
+p2 <- SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+)
+
+p1 + p2
+```
+
+# Searching for features exhibiting spatial patterning in the absence of pre-annotation
+ 
+Using two methods
+
+## Moran's I Algorithm
+
+```{r spatial.vf.moransi}
+GBM <- FindSpatiallyVariableFeatures(GBM,
+                                       features = VariableFeatures(GBM)[1:1000],
+                                       selection.method = "moransi")
+```
+
+```{r spatial.vf.moransi.data.plot, fig.width=12, fig.height=10}
+# With data
+
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "moransi"), 6)
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
+'''
+
+Interestingly, Clusters 15, 11, 13, 6, 3, 16, 12 have a common base of overly expressed group of genes (could they be actually way more similar than expected and therefore PCA is overclustering?)
+
+'''
+
+```{r spatial.vf.moransi.scale.plot, fig.width=12, fig.height=10}
+# With scale data
+
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "moransi"), 6)
+
+SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+) +
+  NoLegend()
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "scale.data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
+## Mark Variogram Algorithm
+
+```{r spatial.vf.mark}
+GBM <- FindSpatiallyVariableFeatures(GBM,
+                                       features = VariableFeatures(GBM)[1:10],
+                                       selection.method = "markvariogram")
+```
+
+```{r spatial.vf.mark.data, fig.width=12, fig.height=10}
+# With data
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "markvariogram"), 6)
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+'''
+
+The patterns of Spatially Variable Features most certainly changed between algorythms, I will be moving forward with 
+
+'COL' type genes seem to be common to a certain specific region of the brain with both algorythms.
+
+'''
+
+```{r spatial.vf.mark.scale, fig.width=12, fig.height=10}
+# With scale data
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "markvariogram"), 6)
+
+SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+) +
+  NoLegend()
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "scale.data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+
+```
+
+# Inspecting clusters and finding their TOP markers to study patterns
+
+```{r}
+table(Idents(GBM))
+```
+
+```{r}
+markers <- FindAllMarkers(
+  GBM,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+```
+
+## 10 Top Genes per cluster
+
+```{r}
+library(dplyr)
+
+top10 <- markers %>%
+  group_by(cluster) %>%
+  slice_max(
+    order_by = avg_log2FC,
+    n = 10
+  )
+
+top10
+```
+
+```{r heatmap, fig.width=16, fig.height=14}
+top5 <- top10 %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 5)
+
+DoHeatmap(
+  GBM,
+  features = unique(top5$gene),
+  group.by = "seurat_clusters"
+) +
+  scale_fill_gradientn(
+    colours = c("#313695", "#74ADD1", "white", "#F46D43", "#A50026")
+  ) +
+  NoLegend()
+```
+# Possible correlation
+## Identification of Spatially Variable Features using Seurat
+
+Perform differential expression based on pre-annotated anatomical regions within the tissue, which may be determined either from unsupervised clustering or prior knowledge.
+
+Cluster 5 and 9 have 'COL' type genes overly expressed when compared to all other clusters
+
+```{r}
+avg_sct_residuals <- as.matrix(
+  AverageExpression(
+    GBM,
+    assays = "SCT",
+    group.by = "seurat_clusters",
+    layer = "scale.data"
+  )$SCT
+)
+
+rho <- cor(avg_sct_residuals, method = "spearman")
+cor_5_9 <- rho["g5", "g9"]
+
+matches_5 <- sort(
+  rho["g5", colnames(rho) != "g5"],
+  decreasing = TRUE
+)
+
+data.frame(
+  rank = seq_along(matches_5),
+  cluster = sub("^g", "", names(matches_5)),
+  spearman_rho = round(unname(matches_5), 3)
+)
+
+pair <- avg_sct_residuals[, c("g5", "g9")]
+limits <- range(pair)
+
+plot(
+  pair[, "g5"], pair[, "g9"],
+  xlim = limits, ylim = limits, asp = 1,
+  pch = 16, cex = 0.55,
+  col = adjustcolor("#176C72", alpha.f = 0.4),
+  xlab = "Cluster 5 mean SCT residual",
+  ylab = "Cluster 9 mean SCT residual",
+  main = sprintf("Clusters 5 and 9 (Spearman rho = %.3f)", cor_5_9)
+)
+abline(a = 0, b = 1, lty = 2, col = "grey55")
+
+```
+
+## Mapping the clusters and gene programms
+
+This highlights clusters 5 (Collagen), 9 (Collagen and 7 (Hypoxia) on the same H&E image.
+
+```{r}
+image_id <- Images(GBM)[1]
+image_scale <- "lowres"
+
+focus <- c("5", "9", "7")
+cluster <- as.character(GBM$seurat_clusters)
+GBM$focus_region <- factor(
+  ifelse(cluster %in% focus, cluster, "Other"),
+  levels = c(focus, "Other")
+)
+
+p_clusters <- SpatialDimPlot(
+  GBM,
+  group.by = "focus_region",
+  images = image_id,
+  image.scale = image_scale,
+  pt.size.factor = 2.8,
+  alpha = 1,
+  image.alpha = 0.55,
+  cols = c(
+    "5" = "#D55E00",
+    "9" = "#009E73",
+    "7" = "#0072B2",
+    "Other" = "grey88"
+  ),
+  combine = FALSE
+)[[1]]
+
+panels <- list(
+  Collagen = c("COL1A1", "COL1A2", "COL3A1", "COL6A3", "DCN", "POSTN"),
+  MES2_markers = c("DDIT3", "ENO2", "VIM", "ADM", "LDHA"),
+  Hypoxia = c("CA9", "HILPDA", "ANGPTL4", "VEGFA", "NDRG1", "BNIP3"),
+  MES1_markers = c("ANXA1", "ANXA2", "CHI3L1", "CD44"),
+  GBM_markers = c("BCAN", "DDR1", "PTPRZ1", "NUSAP1", "TPX2", "UHRF1")
+)
+
+panels <- lapply(panels, intersect, y = rownames(GBM[["SCT"]]))
+print(panels)
+stopifnot(all(lengths(panels) >= 3L))
+
+GBM <- AddModuleScore(
+  GBM, features = panels, assay = "SCT", name = "Niche", seed = 42
+)
+GBM$Collagen <- GBM$Niche1
+GBM$MES2_markers <- GBM$Niche2
+GBM$Hypoxia <- GBM$Niche3
+GBM$MES1_markers <- GBM$Niche4
+GBM$GBM_markers <- GBM$Niche5
+
+score_maps <- SpatialFeaturePlot(
+  GBM,
+  features = c(
+    "Collagen", "Hypoxia",
+    "MES1_markers", "MES2_markers",
+    "GBM_markers"
+  ),
+  images = image_id,
+  image.scale = image_scale,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 0.55,
+  keep.scale = "feature",
+  combine = FALSE
+)
+
+```
+
+```{r gbm-spatial-output, fig.width=14, fig.height=10, out.width="100%", fig.align="center"}
+p_spatial <- wrap_plots(
+  c(list(p_clusters), score_maps),
+  ncol = 3,
+  nrow = 2,
+  guides = "keep"
+) & ggplot2::theme(
+  plot.margin = ggplot2::margin(t = 1, r = 8, b = 1, l = 8, unit = "pt"),
+  legend.position = "bottom",
+  legend.box.spacing = grid::unit(2, "pt"),
+  legend.margin = ggplot2::margin(0, 0, 0, 0),
+  legend.text = ggplot2::element_text(size = 16),
+  legend.title = ggplot2::element_text(size = 18, face = "bold")
+)
+
+p_spatial
+```
+
+## Comparing Clusters highly expression MBP
+
+```{r}
+avg_expr <- AverageExpression(
+  GBM,
+  assays = "SCT",
+  group.by = "seurat_clusters",
+  layer = "scale.data"
+)$SCT
+
+clusters_to_compare <- c(
+  "g1", "g10", "g14", "g17",
+  "g8", "g12", "g16"
+)
+
+avg_expr_subset <- as.matrix(
+  avg_expr[, clusters_to_compare, drop = FALSE]
+)
+
+cor_matrix <- cor(
+  avg_expr_subset,
+  method = "spearman"
+)
+
+round(cor_matrix, 3)
+
+library(pheatmap)
+
+pheatmap(
+  cor_matrix,
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  main = "Transcriptional correlation between clusters"
+)
+```
+
+
+```{r}
+cor_pairs <- as.data.frame(as.table(cor_matrix))
+
+cor_pairs <- cor_pairs %>%
+  filter(Var1 != Var2) %>%
+  mutate(
+    pair = paste(
+      pmin(as.character(Var1), as.character(Var2)),
+      pmax(as.character(Var1), as.character(Var2)),
+      sep = " vs "
+    )
+  ) %>%
+  distinct(pair, .keep_all = TRUE) %>%
+  arrange(desc(Freq))
+
+cor_pairs
+```
+
