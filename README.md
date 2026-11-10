@@ -6,9 +6,13 @@ This project uses 10x Visium CytAssist and Seurat to map gene expression across 
 
 The notebook contains the complete analysis and figures. For a local preview, download and open [HTML R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/notebook.html) in a browser.
 
+<img src="https://i.postimg.cc/D08ZCC9d/GBM-Findings-Summary.png" height="80%" width="80%" alt="Workflow Chart"/>
+
 ## Dataset
 
 The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profiled on an 11 mm Visium CytAssist capture area. The filtered Space Ranger 2.0.1 output yielded **18,085 features across 10,878 tissue-covered spots** in Seurat. The dataset is available under CC BY 4.0. [10x Genomics dataset and downloads](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard)
+
+<img src="https://i.postimg.cc/Pfgp3HqS/GBM-QC-n-Count-Spatial.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 ## Workflow
 
@@ -26,9 +30,13 @@ Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement
 
 The collagen signal is consistent with extracellular matrix remodelling. Comparing the collagen and hypoxia maps with the matched H&E image would help assess whether either pattern is associated with necrosis in this GBM section.
 
-### Shared myelin signal and divergence in cluster 12
+<img src="https://i.postimg.cc/jdY26h8J/spatial-gene-programs.png" height="80%" width="80%" alt="Workflow Chart"/>
+
+### Shared myelin signal (Cluster 1 and 14) and divergence in cluster 12
 
 Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG/MOBP* module scores (2.13–2.14). Across the broader set of genes, clusters 1 and 14 showed strong agreement in their gene rankings, while cluster 12 was moderately correlated with both. This pattern persisted after excluding *MBP*, *PLP1*, *MOG* and *MOBP* from the correlation.
+
+<img src="https://i.postimg.cc/hGXKRJyJ/mbp-cluster-correlation.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 | Cluster pair | Spearman ρ, all spots | Spearman ρ, *MBP*-high spots |
 | --- | ---: | ---: |
@@ -36,7 +44,9 @@ Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG
 | 12 and 1 | 0.457 | 0.493 |
 | 12 and 14 | 0.434 | 0.468 |
 
-Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) · [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/)
+Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) · [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/) 
+
+<img src="missing an image here" height="80%" width="80%" alt="Workflow Chart"/>
 
 These differences could reflect variation in cell composition or transcriptional state across Visium spots. Histology and tumour-associated copy-number profiles would help assess whether the myelin-rich regions also differ in local tumour infiltration.
 
