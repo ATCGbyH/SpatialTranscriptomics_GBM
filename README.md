@@ -1,6 +1,7 @@
 # Spatial Transcriptomics of Human Glioblastoma
 
-A Seurat analysis of 10x Visium CytAssist data from a human glioblastoma (GBM) tissue section. I mapped transcriptional clusters onto the H&E image and compared where collagen, hypoxia and other gene programs were expressed.
+A Seurat analysis of 10x Visium CytAssist data from a human glioblastoma (GBM) tissue section. 
+I mapped transcriptional clusters onto the H&E image and compared where collagen, hypoxia and other gene programs were expressed.
 
 [Project page](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/) · [Analysis notebook](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/notebook.html) · [R Markdown source](docs/GBM_Spatial_Seurat.Rmd)
 
