@@ -18,11 +18,17 @@ The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profi
 4. Map scores for collagen, hypoxia, MES1- and MES2-associated markers, and a three-gene GBM marker panel (*BCAN*, *PTPRZ1*, *DDR1*).
 5. Compare cluster-average SCT residuals using Spearman correlation, both across all spots and within the *MBP*-high subset.
 
-## Findings
+## Findings and interpretation
 
-**Collagen and hypoxia.** Clusters 5 and 9 showed elevated expression of collagen genes and a cluster-profile correlation of **ρ = 0.571**. Areas with high hypoxia marker scores overlapped cluster 7.
+### Collagen enrichment and hypoxia
 
-**Myelin-associated regions.** Using the section-wide 80th percentile of *MBP* as the cutoff, **92.0%** of cluster 1, **86.8%** of cluster 14 and **95.4%** of cluster 12 were *MBP*-high. These spots had similar median *PLP1/MOG/MOBP* module scores across the three clusters (2.13–2.14).
+Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement in gene rankings based on cluster-average SCT residuals (Spearman ρ = 0.571). High scores for a hypoxia-associated panel that included *CA9*, *VEGFA* and *HILPDA* overlapped cluster 7.
+
+The collagen signal is consistent with extracellular matrix remodelling. Comparing the collagen and hypoxia maps with the matched H&E image would help assess whether either pattern is associated with necrosis in this GBM section.
+
+### Shared myelin signal and divergence in cluster 12
+
+Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG/MOBP* module scores (2.13–2.14). Across the broader set of genes, clusters 1 and 14 showed strong agreement in their gene rankings, while cluster 12 was moderately correlated with both. This pattern persisted after excluding *MBP*, *PLP1*, *MOG* and *MOBP* from the correlation.
 
 | Cluster pair | Spearman ρ, all spots | Spearman ρ, *MBP*-high spots |
 | --- | ---: | ---: |
@@ -30,7 +36,9 @@ The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profi
 | 12 and 1 | 0.457 | 0.493 |
 | 12 and 14 | 0.434 | 0.468 |
 
-Excluding the four myelin markers yielded similar correlations. Cluster 12 had lower mean SCT residuals for several myeloid and complement-associated genes, including *CD163*, *C1QA* and *VSIG4*. The results describe differences in spot-level expression within one section. Assigning malignant cell identity would require additional evidence, such as histopathology and tumour-associated copy-number profiles. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8)
+Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) · [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/)
+
+These differences could reflect variation in cell composition or transcriptional state across Visium spots. Histology and tumour-associated copy-number profiles would help assess whether the myelin-rich regions also differ in local tumour infiltration.
 
 ## Reproduce the analysis
 
