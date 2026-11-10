@@ -52,7 +52,7 @@ Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG
 | 12 and 1 | 0.457 | 0.493 |
 | 12 and 14 | 0.434 | 0.468 |
 
-Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12.
+Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for myeloid and complement-associated genes, including *CD14*, *CD163*, *C1QA* and *VSIG4*, and a higher residual for *KIF5A*. This pattern is consistent with a weaker myeloid-associated signal and a possible greater neuronal contribution in cluster 12. 
 
 <img src="missing an image here" height="80%" width="80%" alt="Workflow Chart"/>
 
@@ -66,7 +66,11 @@ These differences could reflect variation in cell composition or transcriptional
 
 ## References
 
-· [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8) 
-· [KIF5A and axonal transport](https://pmc.ncbi.nlm.nih.gov/articles/PMC11418931/) 
+· Joyce, L.J. and Lindsay, A.J. (2024) ‘A systematic computational analysis of the endosomal recycling pathway in glioblastoma’, Biochemistry and Biophysics Reports, 38, p. 101700. doi:10.1016/j.bbrep.2024.101700. 
+
+· Miller, T.E. et al. (2025) ‘Programs, origins and immunomodulatory functions of myeloid cells in glioma’, Nature, 640(8060), pp. 1072–1082. doi:10.1038/s41586-025-08633-8. 
 
 *Analysis by Hugo Roca*
+
+(Joyce & Lindsay, 2024)
+(Miller et al., 2025)
