@@ -64,7 +64,7 @@ The three clusters therefore had similar myelin module scores within the *MBP*-h
 
 <img src="https://i.postimg.cc/br5QLVvb/GBM-Cluster-12-Comparison.png" height="80%" width="80%" alt="Workflow Chart"/>
 
-These differences could reflect variation in cell composition or transcriptional state across Visium spots. Histology and tumour-associated copy-number profiles would help assess whether the myelin-rich regions also differ in local tumour infiltration.
+These differences could also merely reflect variation in cell composition or transcriptional state across Visium spots. Histology and tumour-associated copy-number profiles would help assess whether the myelin-rich regions also differ in local tumour infiltration.
 
 ## Reproduce the analysis
 
