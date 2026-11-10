@@ -38,4 +38,4 @@ Excluding the four myelin markers yielded similar correlations. Cluster 12 had l
 2. Download the filtered feature-barcode matrix and spatial imaging archive from 10x Genomics. Place the matrix at `data/filtered_feature_bc_matrix.h5` and extract the images, coordinates and scale factors into `data/spatial/`.
 3. Place `data/` beside the R Markdown file or update `data_dir` to point to the input folder. Run the chunks in order.
 
-*Analysis by Hugo Roca.*
+*Analysis by Hugo Roca*
