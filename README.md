@@ -1,36 +1,41 @@
-# Spatial Transcriptomics - Seurat Analysis of Human Glioblastoma (GBM) FFPE Tissue
+# Spatial Transcriptomics of Human Glioblastoma
 
-A Seurat analysis of 10x Visium CytAssist data from a human glioblastoma (GBM) tissue section. 
-I mapped transcriptional clusters onto the H&E image and compared where collagen, hypoxia and other gene programs were expressed.
+This project uses 10x Visium CytAssist and Seurat to map gene expression across a human glioblastoma (GBM) tissue section. It compares collagen- and hypoxia-associated regions and asks how similar three *MBP*-rich spot clusters are across their broader expression profiles.
 
-[Project page](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/) · [Analysis notebook](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/notebook.html) · [R Markdown source](docs/GBM_Spatial_Seurat.Rmd)
+[Open the HTML notebook](https://atcgbyh.github.io/SpatialTranscriptomics_GBM/notebook.html) · [View the R Markdown source](docs/GBM_Spatial_Seurat.Rmd)
 
-![UMAP embedding and H&E tissue image with the same 21 colour-coded spot clusters](https://i.postimg.cc/xjmtZst9/GBM-Annotated-Spatial-Map.png)
-
-## Key observations
-
-- **21 spot clusters** were identified across 10,878 tissue-covered spots. Cluster 0 was the largest, with 1,262 spots.
-- **Clusters 5 and 9** showed elevated collagen-gene expression and had a Spearman correlation of **0.571** across cluster-mean SCTransform residuals. Areas with high hypoxia module scores overlapped **cluster 7**.
-- **Clusters 1 and 14** occupied neighbouring areas of the section. They had the most similar cluster-mean profiles among seven clusters selected for high `MBP` expression (**Spearman ρ = 0.944**).
+The notebook contains the complete analysis and figures. For a local preview, open `docs/notebook.html` in a browser.
 
 ## Dataset
 
-The notebook imports **18,085 features** from one formalin-fixed, paraffin-embedded human glioblastoma section profiled on an 11 mm Visium CytAssist capture area. The source data were processed with Space Ranger 2.0.1 and released under CC BY 4.0. [10x Genomics dataset and downloads](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard)
+The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profiled on an 11 mm Visium CytAssist capture area. The filtered Space Ranger 2.0.1 output yielded **18,085 features across 10,878 tissue-covered spots** in Seurat. The dataset is available under CC BY 4.0. [10x Genomics dataset and downloads](https://www.10xgenomics.com/datasets/human-brain-cancer-11-mm-capture-area-ffpe-2-standard)
 
-## Analysis workflow
+## Workflow
 
-1. **Import and normalise.** Inspect total counts per spot and normalise with `SCTransform()`.
-2. **Cluster and map spots.** Use the first 30 principal components for graph-based clustering and UMAP, then overlay cluster labels on the tissue image.
-3. **Rank spatially variable genes.** Apply Moran’s I to 1,000 highly variable genes and a mark variogram to 10 highly variable genes.
-4. **Compare clusters.** Rank positive markers by log₂ fold change and compare cluster-mean SCT residuals using Spearman correlation.
-5. **Score marker panels.** Map collagen, hypoxia, MES1-associated, MES2-associated and GBM marker panels using `AddModuleScore()`.
+1. Inspect counts per spot and normalise the spatial assay with `SCTransform()`.
+2. Use the first 30 principal components for graph-based clustering and UMAP, then map the **21 spot clusters** onto the H&E image.
+3. Rank spatially variable genes using Moran’s I and a mark variogram. Identify cluster markers with `FindAllMarkers()`.
+4. Map scores for collagen, hypoxia, MES1- and MES2-associated markers, and a three-gene GBM marker panel (*BCAN*, *PTPRZ1*, *DDR1*).
+5. Compare cluster-average SCT residuals using Spearman correlation, both across all spots and within the *MBP*-high subset.
 
-The module scores describe relative expression at spot level in this tissue section.
+## Findings
 
-## View or rerun the notebook
+**Collagen and hypoxia.** Clusters 5 and 9 showed elevated expression of collagen genes and a cluster-profile correlation of **ρ = 0.571**. Areas with high hypoxia marker scores overlapped cluster 7.
 
-Open `docs/index.html` locally to view the project page, or `docs/notebook.html` for the saved analysis. Select **Code → Download Rmd** in the notebook to get the editable source.
+**Myelin-associated regions.** Using the section-wide 80th percentile of *MBP* as the cutoff, **92.0%** of cluster 1, **86.8%** of cluster 14 and **95.4%** of cluster 12 were *MBP*-high. These spots had similar median *PLP1/MOG/MOBP* module scores across the three clusters (2.13–2.14).
 
-1. Use R with Seurat v5. The source loads `SeuratData`, `hdf5r`, `Rfast2`, `dplyr`, `ggplot2`, `patchwork`, `pheatmap`, `htmltools` and `vembedr`. Use `rmarkdown` and `knitr` to render the notebook. [Seurat installation guide](https://satijalab.org/seurat/articles/install_v5.html)
-2. Download the filtered feature-barcode HDF5 matrix and spatial imaging archive from 10x Genomics. Save the matrix as `data/filtered_feature_bc_matrix.h5` and extract the images, coordinates and scale factors into `data/spatial/`.
-3. Place `data/` beside the `.Rmd` file or set `data_dir` to its location. Run the notebook chunks in order.
+| Cluster pair | Spearman ρ, all spots | Spearman ρ, *MBP*-high spots |
+| --- | ---: | ---: |
+| 1 and 14 | 0.944 | 0.939 |
+| 12 and 1 | 0.457 | 0.493 |
+| 12 and 14 | 0.434 | 0.468 |
+
+Excluding the four myelin markers yielded similar correlations. Cluster 12 had lower mean SCT residuals for several myeloid and complement-associated genes, including *CD163*, *C1QA* and *VSIG4*. The results describe differences in spot-level expression within one section. Assigning malignant cell identity would require additional evidence, such as histopathology and tumour-associated copy-number profiles. [Myeloid programmes in human glioma](https://doi.org/10.1038/s41586-025-08633-8)
+
+## Reproduce the analysis
+
+1. Use R with Seurat v5 and install the packages loaded by the notebook, including `SeuratData`, `hdf5r`, `Rfast2`, `dplyr`, `ggplot2`, `patchwork`, `pheatmap`, `htmltools` and `vembedr`. Use `rmarkdown` and `knitr` to render the notebook. [Seurat installation guide](https://satijalab.org/seurat/articles/install_v5.html)
+2. Download the filtered feature-barcode matrix and spatial imaging archive from 10x Genomics. Place the matrix at `data/filtered_feature_bc_matrix.h5` and extract the images, coordinates and scale factors into `data/spatial/`.
+3. Place `data/` beside the R Markdown file or update `data_dir` to point to the input folder. Run the chunks in order.
+
+*Analysis by Hugo Roca.*
