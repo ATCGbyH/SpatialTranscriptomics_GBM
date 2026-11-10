@@ -26,7 +26,7 @@ The analysis uses one formalin-fixed, paraffin-embedded (FFPE) GBM section profi
 
 ## Findings and interpretation
 
-<img src="https://i.postimg.cc/d3w382vk/GBM-Tissue-to-Clusters.png" height="80%" width="80%" alt="Workflow Chart"/>
+<img src="https://i.postimg.cc/50ndRLLX/GBM-Tissue-to-Clusters.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 Seurat identified **21 clusters across 10,878 tissue-covered Visium spots**. The spatial map shows where the clusters occur on the H&E section, while the UMAP arranges the same spots by gene expression. Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and sit close together on the UMAP. Cluster 12 lies mainly on the right side of the section and separates from both on the UMAP.
 
