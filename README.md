@@ -78,11 +78,11 @@ These differences could also merely reflect variation in cell composition or tra
 
 ## References
 
-· Joyce, L.J. and Lindsay, A.J. (2024) ‘A systematic computational analysis of the endosomal recycling pathway in glioblastoma’, Biochemistry and Biophysics Reports, 38, p. 101700. doi:10.1016/j.bbrep.2024.101700. 
+· Joyce, L.J. and Lindsay, A.J. (2024) ‘A systematic computational analysis of the endosomal recycling pathway in glioblastoma’, Biochemistry and Biophysics Reports, 38, p. 101700. doi:10.1016/j.bbrep.2024.101700
 
-· Miller, T.E. et al. (2025) ‘Programs, origins and immunomodulatory functions of myeloid cells in glioma’, Nature, 640(8060), pp. 1072–1082. doi:10.1038/s41586-025-08633-8. 
+· Miller, T.E. et al. (2025) ‘Programs, origins and immunomodulatory functions of myeloid cells in glioma’, Nature, 640(8060), pp. 1072–1082. doi:10.1038/s41586-025-08633-8
 
-· Guerra San Juan, I. et al. (2024) Kif5a regulates axonal repair and time-dependent axonal transport of SFPQ granules and mitochondria in human motor neurons [Preprint]. doi:10.1101/2024.09.06.611684. 
+· Guerra San Juan, I. et al. (2024) Kif5a regulates axonal repair and time-dependent axonal transport of SFPQ granules and mitochondria in human motor neurons [Preprint]. doi:10.1101/2024.09.06.611684
 
 · Greenwald, A.C. et al. (2024). ‘Integrative spatial analysis reveals a multi-layered organization of glioblastoma’. *Cell*, 187(10), pp. 2485–2501.e26. https://doi.org/10.1016/j.cell.2024.03.029
   
