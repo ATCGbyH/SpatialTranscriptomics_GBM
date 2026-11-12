@@ -1,0 +1,1263 @@
+---
+title: "Spatial Transcriptomics - Seurat Analysis of Human Glioblastoma (GBM) FFPE Tissue"
+output: html_notebook
+---
+
+# Setting up environment for Spatial Analysis
+
+```{r setup, include=FALSE}
+options(future.globals.maxSize = 1024^3 * 10) # 10 GB
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- res
+    }
+  }
+}))
+knitr::opts_chunk$set(
+  tidy = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  time_it = TRUE,
+  error = TRUE,
+  dpi=150
+)
+```
+
+# Packages/Dependencies
+
+```{r install}
+library(Seurat)
+library(SeuratData)
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+library(Rfast2)
+```
+
+```{r libraries.for.rmd, echo = FALSE}
+library("htmltools")
+library("vembedr")
+```
+
+# Loading 10x Visium Dataset
+
+```{r data.install, message=FALSE, warning=FALSE}
+
+data_dir <- "C:/Users/hugor/OneDrive/Desktop/Bioinformatics/Spatial Transcriptomics/Glioblastoma Spatial Data"
+
+list.files(data_dir)
+
+install.packages("hdf5r")
+
+library(hdf5r)
+
+GBM <- Load10X_Spatial(data.dir = data_dir)
+
+GBM
+
+```
+
+# Data preprocessing
+
+```{r qc, fig.height=5}
+plot1 <- VlnPlot(GBM, features = "nCount_Spatial", pt.size = 0.1) + NoLegend()
+
+plot2 <- SpatialFeaturePlot(GBM, features = "nCount_Spatial", pt.size.factor = 3) + theme(legend.position = "right")
+
+wrap_plots(plot1, plot2)
+```
+
+## Spatial Normalisation
+
+```{r normalise}
+GBM <- SCTransform(GBM, assay = "Spatial", verbose = FALSE)
+```
+
+# Gene expression visualisation
+
+```{r}
+features <- rownames(GBM)
+
+features
+
+## Sanity check 
+'ATG5' %in% features
+```
+
+## Visualisation of 4 Genes
+
+```{r featureplot}
+SpatialFeaturePlot(GBM, features = c("HPCA", 'IDH1', 'IDH2', 'PPP1R1B'))
+
+```
+
+```{r}
+SpatialFeaturePlot(
+  GBM,
+  features = c('IDH1'),
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 2,
+  image.scale = "lowres",
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+)
+```
+
+# Dimensionality reduction, clustering
+
+```{r dim.cluster}
+GBM <- RunPCA(GBM, assay = "SCT", verbose = FALSE)
+GBM <- FindNeighbors(GBM, reduction = "pca", dims = 1:30)
+GBM <- FindClusters(GBM, verbose = FALSE)
+GBM <- RunUMAP(GBM, reduction = "pca", dims = 1:30)
+```
+## Visualisation
+```{r dim.plots,fig.height=5}
+p1 <- DimPlot(GBM, reduction = "umap", label = TRUE) 
+
+p2 <- SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+)
+
+p1 + p2
+```
+
+# Searching for features exhibiting spatial patterning in the absence of pre-annotation
+ 
+Using two methods
+
+## Moran's I Algorithm
+
+```{r spatial.vf.moransi}
+GBM <- FindSpatiallyVariableFeatures(GBM,
+                                       features = VariableFeatures(GBM)[1:1000],
+                                       selection.method = "moransi")
+```
+
+```{r spatial.vf.moransi.data.plot, fig.width=12, fig.height=10}
+# With data
+
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "moransi"), 6)
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
+'''
+
+Interestingly, Clusters 15, 11, 13, 6, 3, 16, 12 have a common base of overly expressed group of genes (could they be actually way more similar than expected and therefore PCA is overclustering?)
+
+'''
+
+```{r spatial.vf.moransi.scale.plot, fig.width=12, fig.height=10}
+# With scale data
+
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "moransi"), 6)
+
+SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+) +
+  NoLegend()
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "scale.data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
+## Mark Variogram Algorithm
+
+```{r spatial.vf.mark}
+GBM <- FindSpatiallyVariableFeatures(GBM,
+                                       features = VariableFeatures(GBM)[1:10],
+                                       selection.method = "markvariogram")
+```
+
+```{r spatial.vf.mark.data, fig.width=12, fig.height=10}
+# With data
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "markvariogram"), 6)
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
+
+The patterns of Spatially Variable Features most certainly changed between algorythms, I will be moving forward with 
+
+'COL' type genes seem to be common to a certain specific region of the brain with both algorythms.
+
+
+```{r spatial.vf.mark.scale, fig.width=12, fig.height=10}
+# With scale data
+top.features <- head(SpatiallyVariableFeatures(GBM, method = "markvariogram"), 6)
+
+SpatialDimPlot(
+  GBM,
+  group.by = NULL,
+  images = NULL,
+  cols = NULL,
+  crop = TRUE,
+  cells.highlight = NULL,
+  cols.highlight = c("#DE2D26", "grey50"),
+  facet.highlight = TRUE,
+  label = TRUE,
+  label.size = 3,
+  label.color = "white",
+  repel = FALSE,
+  ncol = NULL,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 1,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  label.box = TRUE,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = FALSE
+) +
+  NoLegend()
+
+SpatialFeaturePlot(
+  GBM,
+  features = top.features,
+  images = NULL,
+  crop = TRUE,
+  slot = "scale.data",
+  keep.scale = "feature",
+  min.cutoff = NA,
+  max.cutoff = NA,
+  ncol = 3,
+  combine = TRUE,
+  pt.size.factor = 2.5,
+  alpha = c(2, 2),
+  image.alpha = 2,
+  image.scale = "lowres",
+  shape = 21,
+  stroke = NA,
+  stroke.alpha = NA,
+  interactive = FALSE,
+  information = NULL,
+  plot_segmentations = TRUE
+) & 
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
+
+```
+
+# Inspecting clusters and finding their TOP markers to study patterns
+
+```{r}
+table(Idents(GBM))
+```
+
+```{r}
+markers <- FindAllMarkers(
+  GBM,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+```
+
+## 10 Top Genes per cluster
+
+```{r}
+library(dplyr)
+
+top10 <- markers %>%
+  group_by(cluster) %>%
+  slice_max(
+    order_by = avg_log2FC,
+    n = 10
+  )
+
+top10
+```
+
+```{r heatmap, fig.width=16, fig.height=14, dpi=200, fig.align="center", message=FALSE}
+top5 <- top10 %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 5, with_ties = FALSE) %>%
+  ungroup()
+
+residual_limit <- 2.5
+
+p_heatmap <- DoHeatmap(
+  GBM,
+  features = unique(top5$gene),
+  assay = "SCT",
+  slot = "scale.data",
+  group.by = "seurat_clusters",
+  disp.min = -residual_limit,
+  disp.max = residual_limit,
+  angle = 90,
+  hjust = 0,
+  vjust = 0.5,
+  size = 3.4,
+  group.bar.height = 0.015,
+  combine = FALSE
+)[[1]] +
+  scale_fill_gradientn(
+    colours = c("#313695", "#74ADD1", "#F7F7F7", "#F46D43", "#A50026"),
+    limits = c(-residual_limit, residual_limit),
+    breaks = c(-residual_limit, 0, residual_limit),
+    na.value = "white",
+    name = "SCT residual"
+  ) +
+  labs(
+    title = "Marker genes across glioblastoma spot clusters",
+    subtitle = "Up to five markers per cluster, ranked by average log2 fold change",
+    caption = "Each column represents one Cell Cluster."
+  ) +
+  theme(
+    axis.text.y = element_text(size = 8.5, colour = "#263238"),
+    legend.position = "bottom",
+    legend.key.width = grid::unit(14, "mm"),
+    legend.key.height = grid::unit(3, "mm"),
+    plot.title = element_text(size = 19, face = "bold"),
+    plot.subtitle = element_text(size = 11, margin = margin(b = 10)),
+    plot.caption = element_text(size = 9, hjust = 0),
+    plot.margin = margin(8, 12, 6, 8)
+  )
+
+p_heatmap_clus <- p_heatmap + ggplot2::guides(colour = "none")
+
+print(p_heatmap_clus)
+
+ggplot2::ggsave(
+  filename = "GBM_Top5_Marker_Heatmap.png",
+  plot = p_heatmap_clus,
+  width = 16,
+  height = 14,
+  units = "in",
+  dpi = 200,
+  bg = "white"
+)
+```
+# Possible correlation
+## Identification of Spatially Variable Features using Seurat
+
+Perform differential expression based on pre-annotated anatomical regions within the tissue, which may be determined either from unsupervised clustering or prior knowledge.
+
+Cluster 5 and 9 have 'COL' type genes overly expressed when compared to all other clusters
+
+```{r}
+avg_sct_residuals <- as.matrix(
+  AverageExpression(
+    GBM,
+    assays = "SCT",
+    group.by = "seurat_clusters",
+    layer = "scale.data"
+  )$SCT
+)
+
+rho <- cor(avg_sct_residuals, method = "spearman")
+cor_5_9 <- rho["g5", "g9"]
+
+matches_5 <- sort(
+  rho["g5", colnames(rho) != "g5"],
+  decreasing = TRUE
+)
+
+data.frame(
+  rank = seq_along(matches_5),
+  cluster = sub("^g", "", names(matches_5)),
+  spearman_rho = round(unname(matches_5), 3)
+)
+
+pair <- avg_sct_residuals[, c("g5", "g9")]
+limits <- range(pair)
+
+plot(
+  pair[, "g5"], pair[, "g9"],
+  xlim = limits, ylim = limits, asp = 1,
+  pch = 16, cex = 0.55,
+  col = adjustcolor("#176C72", alpha.f = 0.4),
+  xlab = "Cluster 5 mean SCT residual",
+  ylab = "Cluster 9 mean SCT residual",
+  main = sprintf("Clusters 5 and 9 (Spearman rho = %.3f)", cor_5_9)
+)
+abline(a = 0, b = 1, lty = 2, col = "grey55")
+
+```
+
+## Mapping the clusters and gene programms
+
+This highlights clusters 5 (Collagen), 9 (Collagen) and 7 (Hypoxia) on the same H&E image.
+
+```{r}
+focus <- c("5", "9", "7")
+cluster <- as.character(GBM$seurat_clusters)
+GBM$focus_region <- factor(
+  ifelse(cluster %in% focus, cluster, "Other"),
+  levels = c(focus, "Other")
+)
+
+p_clusters <- SpatialDimPlot(
+  GBM,
+  group.by = "focus_region",
+  pt.size.factor = 2.8,
+  alpha = 1,
+  image.alpha = 0.55,
+  cols = c(
+    "5" = "#D55E00",
+    "9" = "#009E73",
+    "7" = "#0072B2",
+    "Other" = "grey88"
+  ),
+  combine = FALSE
+)[[1]]
+
+panels <- list(
+  Collagen = c("COL1A1", "COL1A2", "COL3A1", "COL6A3"),
+  GBM_markers = c("BCAN", "PTPRZ1", "DDR1"),
+  Hypoxia = c("CA12", "HILPDA", "ANGPTL4", "CA9", "VEGFA"),
+  MES1_markers = c("CHI3L1", "CD44", "ANXA2"),
+  MES2_markers = c("ADM", "LDHA", "DDIT3")
+)
+
+panels <- lapply(panels, intersect, y = rownames(GBM[["SCT"]]))
+print(panels)
+
+GBM <- AddModuleScore(
+  GBM, features = panels, assay = "SCT", name = "Niche", seed = 42
+)
+GBM$Collagen <- GBM$Niche1
+GBM$GBM_markers <- GBM$Niche2
+GBM$Hypoxia <- GBM$Niche3
+GBM$MES1_markers <- GBM$Niche4
+GBM$MES2_markers <- GBM$Niche5
+
+score_maps <- SpatialFeaturePlot(
+  GBM,
+  features = c(
+    "Collagen", "Hypoxia",
+    "MES1_markers", "MES2_markers",
+    "GBM_markers"
+  ),
+  pt.size.factor = 2.5,
+  alpha = c(1, 1),
+  image.alpha = 0.55,
+  keep.scale = "feature",
+  combine = FALSE
+)
+```
+
+```{r gbm-spatial-output, fig.width=14, fig.height=10, out.width="100%", fig.align="center"}
+## Not a must, just making the graphs more readble
+p_clusters <- p_clusters +
+  ggplot2::guides(
+    fill = ggplot2::guide_legend(
+      override.aes = list(size = 6, alpha = 1)
+    )
+  )
+
+score_maps <- lapply(score_maps, function(p) {
+  fill_scale <- p$scales$get_scales("fill")
+  fill_scale$breaks <- scales::breaks_extended(n = 3)
+
+  p + ggplot2::guides(
+    fill = ggplot2::guide_colourbar(
+      direction = "horizontal",
+      theme = ggplot2::theme(
+        legend.key.width = grid::unit(44, "mm"),
+        legend.key.height = grid::unit(3, "mm"),
+        legend.text = ggplot2::element_text(size = 10)
+      )
+    )
+  )
+})
+
+## Plotting
+
+p_spatial <- wrap_plots(
+  c(list(p_clusters), score_maps),
+  ncol = 3,
+  nrow = 2,
+  guides = "keep"
+) & ggplot2::theme(
+  plot.margin = ggplot2::margin(t = 1, r = 8, b = 1, l = 8, unit = "pt"),
+  legend.position = "bottom",
+  legend.box.spacing = grid::unit(2, "pt"),
+  legend.margin = ggplot2::margin(0, 0, 0, 0),
+  legend.text = ggplot2::element_text(size = 16),
+  legend.title = ggplot2::element_text(size = 18, face = "bold")
+)
+
+p_spatial
+```
+
+## Comparing Clusters highly expression MBP
+
+```{r}
+avg_expr <- AverageExpression(
+  GBM,
+  assays = "SCT",
+  group.by = "seurat_clusters",
+  layer = "scale.data"
+)$SCT
+
+clusters_to_compare <- c(
+  "g1", "g10", "g14", "g17",
+  "g8", "g12", "g16"
+)
+
+avg_expr_subset <- as.matrix(
+  avg_expr[, clusters_to_compare, drop = FALSE]
+)
+
+cor_matrix <- cor(
+  avg_expr_subset,
+  method = "spearman"
+)
+
+round(cor_matrix, 3)
+
+library(pheatmap)
+
+pheatmap(
+  cor_matrix,
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  main = "Transcriptional correlation between clusters"
+)
+```
+
+
+```{r}
+cor_pairs <- as.data.frame(as.table(cor_matrix))
+
+cor_pairs <- cor_pairs %>%
+  filter(Var1 != Var2) %>%
+  mutate(
+    pair = paste(
+      pmin(as.character(Var1), as.character(Var2)),
+      pmax(as.character(Var1), as.character(Var2)),
+      sep = " vs "
+    )
+  ) %>%
+  distinct(pair, .keep_all = TRUE) %>%
+  arrange(desc(Freq))
+
+cor_pairs
+```
+
+
+```{r myelin-clusters-1-14, fig.width=15, fig.height=10, fig.align="center"}
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+
+gbm_myelin <- GBM
+DefaultAssay(gbm_myelin) <- "SCT"
+
+support_genes <- c("PLP1", "MOG", "MOBP")
+genes <- c("MBP", support_genes)
+
+missing_genes <- setdiff(genes, rownames(gbm_myelin[["SCT"]]))
+if (length(missing_genes) > 0) {
+  stop("Genes missing from the SCT assay: ", paste(missing_genes, collapse = ", "))
+}
+
+cluster_ids <- as.character(gbm_myelin$seurat_clusters)
+gbm_myelin$myelin_region <- factor(
+  ifelse(cluster_ids %in% c("1", "14"), paste("Cluster", cluster_ids), "Other spots"),
+  levels = c("Cluster 1", "Cluster 14", "Other spots")
+)
+
+gbm_myelin <- AddModuleScore(
+  gbm_myelin,
+  features = list(support_genes),
+  assay = "SCT",
+  name = "MyelinCheck",
+  seed = 42
+)
+
+image_id <- Images(gbm_myelin)[1]
+
+p_clusters <- SpatialDimPlot(
+  gbm_myelin,
+  group.by = "myelin_region",
+  images = image_id,
+  image.scale = "lowres",
+  cols = c(
+    "Cluster 1" = "#D55E00",
+    "Cluster 14" = "#0072B2",
+    "Other spots" = "#D9D9D9"
+  ),
+  pt.size.factor = 2.5,
+  image.alpha = 0.55,
+  combine = FALSE
+)[[1]] + ggtitle("Clusters 1 and 14")
+
+marker_maps <- SpatialFeaturePlot(
+  gbm_myelin,
+  features = c(genes, "MyelinCheck1"),
+  slot = "data",
+  images = image_id,
+  image.scale = "lowres",
+  pt.size.factor = 2.5,
+  image.alpha = 0.55,
+  keep.scale = "feature",
+  combine = FALSE
+)
+
+score_panel <- length(marker_maps)
+marker_maps[[score_panel]] <- marker_maps[[score_panel]] +
+  ggtitle("Myelin score excluding MBP")
+
+p_myelin <- wrap_plots(c(list(p_clusters), marker_maps), ncol = 3) &
+  theme(
+    plot.margin = margin(2, 4, 2, 4),
+    legend.position = "bottom",
+    plot.title = element_text(size = 13, face = "bold")
+  )
+
+p_myelin
+
+spot_data <- FetchData(
+  gbm_myelin,
+  vars = c("myelin_region", genes, "MyelinCheck1"),
+  layer = "data"
+)
+
+spot_data %>%
+  group_by(myelin_region) %>%
+  summarise(
+    spots = n(),
+    across(all_of(genes), mean, .names = "mean_{.col}"),
+    median_myelin_score = median(MyelinCheck1),
+    .groups = "drop"
+  )
+```
+
+```{r}
+mbp_spots <- FetchData(
+  gbm_myelin,
+  vars = c("seurat_clusters", "MBP", "MyelinCheck1", "nCount_Spatial"),
+  layer = "data"
+)
+
+focus <- c("1", "14")
+mbp_cutoff <- quantile(mbp_spots$MBP, 0.80, names = FALSE)
+
+mbp_spots$cluster <- as.character(mbp_spots$seurat_clusters)
+mbp_spots$mbp_high <- mbp_spots$MBP > 0 & mbp_spots$MBP >= mbp_cutoff
+
+mbp_summary <- mbp_spots %>%
+  group_by(cluster) %>%
+  summarise(
+    spots = n(),
+    high_spots = sum(mbp_high),
+    pct_high = round(100 * mean(mbp_high), 1),
+    median_MBP_high = median(MBP[mbp_high]),
+    median_myelin_high = median(MyelinCheck1[mbp_high]),
+    median_UMIs_high = median(nCount_Spatial[mbp_high]),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(pct_high))
+
+print(mbp_summary, n = Inf)
+```
+
+
+```{r}
+# Mapping high spots in clusters 1, 14 and the rest of the section.
+mbp_colours <- c(
+  "Cluster 1" = "#D55E00",
+  "Cluster 14" = "#0072B2",
+  "Other MBP-high" = "#756BB1",
+  "Below cutoff" = "#D9D9D9"
+)
+
+mbp_spots$mbp_region <- factor(
+  case_when(
+    !mbp_spots$mbp_high ~ "Below cutoff",
+    mbp_spots$cluster %in% focus ~ paste("Cluster", mbp_spots$cluster),
+    TRUE ~ "Other MBP-high"
+  ),
+  levels = names(mbp_colours)
+)
+
+gbm_mbp_map <- AddMetaData(gbm_myelin, metadata = mbp_spots["mbp_region"])
+
+p_mbp_map <- SpatialDimPlot(
+  gbm_mbp_map,
+  group.by = "mbp_region",
+  images = Images(gbm_mbp_map)[1],
+  image.scale = "lowres",
+  cols = mbp_colours,
+  pt.size.factor = 2.5,
+  image.alpha = 0.55,
+  combine = FALSE
+)[[1]] +
+  labs(title = "MBP-high spots on H&E", fill = NULL) +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 10),
+    legend.margin = margin(0, 0, 0, 0)
+  )
+
+# Comparing the score in clusters with enough high spots to show a distribution.
+plot_clusters <- mbp_summary %>%
+  filter(high_spots >= 20 | cluster %in% focus) %>%
+  pull(cluster)
+
+p_mbp_compare <- mbp_spots %>%
+  filter(mbp_high, cluster %in% plot_clusters) %>%
+  mutate(cluster = factor(cluster, levels = plot_clusters)) %>%
+  ggplot(aes(cluster, MyelinCheck1, fill = mbp_region)) +
+  geom_boxplot(width = 0.65, outlier.alpha = 0.25) +
+  scale_fill_manual(values = mbp_colours, guide = "none") +
+  labs(
+    title = "Myelin score among MBP-high spots",
+    x = "Seurat cluster",
+    y = "PLP1 / MOG / MOBP score"
+  ) +
+  theme_classic()
+
+p_mbp_map + p_mbp_compare
+```
+
+From the looks of it, cluster 12 demonstrates particularly similar Myelin scores among MBP-high spots and interestingly, at a fairly further region than cluster 1 and 14. 
+
+Posteriorly I will investigate what is the major difference between these two areas that drive the correlation score between them to be
+
+0.45725566	(g1 vs g12)
+0.43404108	(g12 vs g14)
+
+Particularly when compared to the similarity if g1 vs g14 
+
+0.94376386	(g1 vs g14)
+
+```{r}
+library(dplyr)
+
+clusters <- c("1", "14", "12")
+myelin_genes <- c("MBP", "PLP1", "MOG", "MOBP")
+
+sct_residuals <- SeuratObject::LayerData(
+  gbm_myelin, assay = "SCT", layer = "scale.data"
+)
+
+cluster_by_spot <- setNames(
+  as.character(gbm_myelin$seurat_clusters),
+  colnames(gbm_myelin)
+)
+
+spots_by_cluster <- split(
+  colnames(sct_residuals),
+  factor(cluster_by_spot[colnames(sct_residuals)], levels = clusters)
+)
+
+mbp_high_spots <- rownames(mbp_spots)[which(mbp_spots$mbp_high)]
+
+data.frame(
+  cluster = clusters,
+  all_spots = lengths(spots_by_cluster),
+  MBP_high_spots = lengths(lapply(spots_by_cluster, intersect, y = mbp_high_spots))
+)
+
+mean_profiles <- function(barcodes) {
+  profiles <- vapply(
+    spots_by_cluster,
+    function(spots) {
+      selected <- intersect(spots, barcodes)
+      Matrix::rowMeans(sct_residuals[, selected, drop = FALSE])
+    },
+    numeric(nrow(sct_residuals))
+  )
+  rownames(profiles) <- rownames(sct_residuals)
+  profiles
+}
+
+all_profiles <- mean_profiles(colnames(sct_residuals))
+high_profiles <- mean_profiles(mbp_high_spots)
+held_out <- !rownames(all_profiles) %in% myelin_genes
+
+pairwise_rho <- function(profiles) {
+  rho <- cor(profiles, method = "spearman", use = "pairwise.complete.obs")
+  c(
+    "12 vs 1" = rho["12", "1"],
+    "12 vs 14" = rho["12", "14"],
+    "1 vs 14" = rho["1", "14"]
+  )
+}
+
+round(rbind(
+  "All spots" = pairwise_rho(all_profiles),
+  "All spots excluding myelin markers" = pairwise_rho(all_profiles[held_out, ]),
+  "MBP-high spots" = pairwise_rho(high_profiles),
+  "MBP-high spots excluding myelin markers" = pairwise_rho(high_profiles[held_out, ])
+), 3)
+```
+
+
+```{r}
+# Find shared positive residuals and genes ranked differently in cluster 12.
+gene_profiles <- tibble::tibble(
+  gene = rownames(all_profiles),
+  C1 = all_profiles[, "1"],
+  C14 = all_profiles[, "14"],
+  C12 = all_profiles[, "12"],
+  shared_residual = pmin(C1, C14, C12),
+  rank_shift_vs_1 = rank(C12) - rank(C1),
+  rank_shift_vs_14 = rank(C12) - rank(C14)
+)
+
+shared_genes <- gene_profiles %>%
+  filter(shared_residual > 0) %>%
+  slice_max(shared_residual, n = 8, with_ties = FALSE) %>%
+  select(gene, C1, C14, C12)
+
+shifted_12 <- gene_profiles %>%
+  filter(rank_shift_vs_1 * rank_shift_vs_14 > 0) %>%
+  mutate(rank_shift = pmin(abs(rank_shift_vs_1), abs(rank_shift_vs_14))) %>%
+  slice_max(rank_shift, n = 10, with_ties = FALSE) %>%
+  select(gene, C1, C14, C12, rank_shift_vs_1, rank_shift_vs_14)
+
+shared_genes
+shifted_12
+```
+
+```{r cluster-12-comparison, fig.width=7.5, fig.height=7, fig.align="center"}
+p_cluster_12 <- pheatmap::pheatmap(
+  heatmap_values,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  labels_col = paste("Cluster", clusters),
+  angle_col = "0",
+  color = colorRampPalette(c("#313695", "#F7F7F7", "#A50026"))(101),
+  breaks = seq(-colour_limit, colour_limit, length.out = 102),
+  border_color = NA,
+  display_numbers = TRUE,
+  number_format = "%.2f",
+  fontsize_number = 10,
+  number_color = number_colours,
+  main = "Shared and shifted genes in cluster 12"
+)
+
+ggplot2::ggsave(
+  filename = "GBM_Cluster_12_Comparison_Numbered.png",
+  plot = p_cluster_12$gtable,
+  width = 7.5,
+  height = 7,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+```
+
+
+##  Conclusions between cluster 1, 12 and 14
+
+Cluster 1 and 14 present very similar genetic composition particularly within their predominant set of Myelin score.
+
+Even though cluster 12 presents a fairly similar Myelin score within the MBP predominant spots of this tissue, this cluster demonstrates a shift towards lower genetic expression of genes that present higher SCT transformed RNA expression within cluster 1 and 14. 
+
+Interestingly a majority of cells within cluster 12 are actively expression KIF5A a marker that has previously been associated to correlate negatively with tumour grade, with lower levels of expression being highly present in GBM tumour cells (Joyce & Lindsay, 2024).
+
+This could be a good explanation on why these clusters present such high similarity but also, somewhat dissimilar, with a high chance of a GBM tumour slowly forming within cluster 1 and 14, while cluster 12 cells demonstrate to be closely within healthy states.
+
+Another major factor that may indicate this is the highly expression of CD14 and CD163 cells within cluster 1 and 14, indicating direct activity of immune system in this region and possibly part of a forming GBM. 
+
+# Final Conclusions
+
+## Clusters 5 and 9 driving cluster 7 hypoxia and newly formed GBM.
+
+With Clusters 5 and 9 being directly associated to fibrotic areas rich in collagen, this region may be directly correlated with a GBM formation in late necrotic stages, already forming collagen-rich repairing tissue. 
+
+Cluster 7 demonstrates particularly high expression of Hypoxic and Metastic genes, revealing a new area of metastasis forming within the region. 
+
+## Clusters 1 and 14 Vs 12 (MBP)
+
+Cluster 1 and 14 may represent a new cancer formation within the myelin rich areas of the brain, and even though distant from the main region of this tumour, this may be happening due to the metastatic nature of GBM. 
+
+Cluster 12 on the other hand, demonstrates particularly healthy levels when compared to the other two myelin rich clusters, mediated by lower levels of immune cell associated RNA expression, coupled with highly expressed KIF5A marker, which had a negative correlation to tumour grade.
+
+# References 
+
+Joyce, L.J. and Lindsay, A.J. (2024) ‘A systematic computational analysis of the endosomal recycling pathway in glioblastoma’, Biochemistry and Biophysics Reports, 38, p. 101700. doi:10.1016/j.bbrep.2024.101700. 
+
+
+### Integration with single-cell data
+
+```{r gbm-flex-download, message=FALSE}
+library(Seurat)
+
+if (!exists("GBM") || !exists("data_dir")) {
+  stop("Run your Visium import chunk first.")
+}
+if (!all(c("Spatial", "SCT") %in% Assays(GBM)) ||
+    !"pca" %in% Reductions(GBM)) {
+  stop("Run SCTransform and RunPCA on GBM first.")
+}
+
+flex_dir <- file.path(data_dir, "flex_reference")
+dir.create(flex_dir, recursive = TRUE, showWarnings = FALSE)
+
+sample_id <- "4plex_human_lungcancer_glioblastoma_scFFPE_multiplex_Glioblastoma_Manual_BC3"
+sample_url <- paste0(
+  "https://cf.10xgenomics.com/samples/cell-exp/7.1.0/",
+  sample_id, "/", sample_id
+)
+
+flex_h5 <- file.path(flex_dir, "Glioblastoma_Manual_BC3_filtered.h5")
+flex_analysis <- file.path(flex_dir, "Glioblastoma_Manual_BC3_analysis.tar.gz")
+
+download_bc3 <- function(suffix, destination) {
+  if (file.exists(destination) && file.info(destination)$size > 0) {
+    return(invisible(destination))
+  }
+
+  partial <- paste0(destination, ".part")
+  on.exit(unlink(partial), add = TRUE)
+
+  status <- utils::download.file(
+    paste0(sample_url, suffix),
+    destfile = partial,
+    mode = "wb"
+  )
+  if (status != 0L || !file.rename(partial, destination)) {
+    stop("Could not save the 10x file to ", destination)
+  }
+
+  invisible(destination)
+}
+
+download_bc3("_count_sample_filtered_feature_bc_matrix.h5", flex_h5)
+download_bc3("_count_analysis.tar.gz", flex_analysis)
+
+analysis_members <- c(
+  clusters = "analysis/clustering/gene_expression_graphclust/clusters.csv",
+  umap = "analysis/umap/gene_expression_2_components/projection.csv"
+)
+
+if (!all(file.exists(file.path(flex_dir, analysis_members)))) {
+  utils::untar(
+    flex_analysis,
+    files = unname(analysis_members),
+    exdir = flex_dir
+  )
+}
+```
+
+#### Prepare the Flex reference
+
+```{r gbm-flex-reference, fig.width=8, fig.height=6, message=FALSE}
+flex_counts <- Read10X_h5(flex_h5, use.names = TRUE, unique.features = TRUE)
+
+cr_clusters <- read.csv(file.path(flex_dir, analysis_members[["clusters"]]))
+cr_umap <- read.csv(
+  file.path(flex_dir, analysis_members[["umap"]]),
+  check.names = FALSE
+)
+
+barcodes <- colnames(flex_counts)
+cluster_index <- match(barcodes, cr_clusters$Barcode)
+umap_index <- match(barcodes, cr_umap$Barcode)
+
+if (length(barcodes) != 4620L || anyNA(cluster_index) || anyNA(umap_index)) {
+  stop("Check that the counts, cluster assignments and UMAP are from BC3.")
+}
+
+flex_ref <- CreateSeuratObject(
+  counts = flex_counts,
+  project = "GBM_Flex_BC3"
+)
+flex_ref$bc3_cluster <- factor(
+  sprintf("BC3-%02d", cr_clusters$Cluster[cluster_index])
+)
+
+umap <- as.matrix(cr_umap[umap_index, c("UMAP-1", "UMAP-2")])
+rownames(umap) <- barcodes
+colnames(umap) <- c("UMAP_1", "UMAP_2")
+
+flex_ref[["umap"]] <- SeuratObject::CreateDimReducObject(
+  embeddings = umap,
+  key = "UMAP_",
+  assay = "RNA"
+)
+
+summary(flex_ref[[]][c("nCount_RNA", "nFeature_RNA")])
+table(flex_ref$bc3_cluster)
+
+flex_ref <- SCTransform(
+  flex_ref, assay = "RNA", ncells = 3000, verbose = FALSE
+)
+
+DimPlot(
+  flex_ref,
+  reduction = "umap",
+  group.by = "bc3_cluster",
+  label = TRUE,
+  repel = TRUE
+) +
+  ggplot2::labs(
+    title = "Paired GBM Flex reference",
+    subtitle = "Cell Ranger graph clusters"
+  )
+```
+
+#### Review reference markers
+
+```{r gbm-flex-markers, fig.width=12, fig.height=6, message=FALSE}
+marker_panels <- list(
+  Myeloid = c("CD14", "CD163", "CSF1R", "C1QA"),
+  Neuronal = c("SNAP25", "SYT1", "NEFL", "KIF5A"),
+  Myelin = c("MBP", "PLP1", "MOG", "MOBP"),
+  Endothelial = c("CLDN5", "VWF", "PECAM1"),
+  Hypoxia = c("CA9", "HILPDA", "ANGPTL4", "VEGFA")
+)
+
+marker_panels <- Filter(
+  length,
+  lapply(marker_panels, intersect, y = rownames(flex_ref[["SCT"]]))
+)
+
+DotPlot(
+  flex_ref,
+  features = marker_panels,
+  group.by = "bc3_cluster",
+  assay = "SCT"
+) +
+  RotatedAxis() +
+  ggplot2::labs(x = NULL, y = "Flex reference cluster")
+```
+
+#### Transfer the reference clusters to Visium
+
+```{r gbm-flex-transfer, message=FALSE}
+shared_genes <- intersect(
+  rownames(flex_ref[["RNA"]]),
+  rownames(GBM[["Spatial"]])
+)
+
+anchor_features <- Reduce(intersect, list(
+  shared_genes,
+  VariableFeatures(flex_ref[["SCT"]]),
+  rownames(GBM[["SCT"]])
+))
+
+cat("Shared count features:", length(shared_genes), "\n")
+cat("SCT features for anchor finding:", length(anchor_features), "\n")
+
+if (length(anchor_features) <= 30L) {
+  stop("Check the shared gene symbols and SCT assays before mapping with 30 PCs.")
+}
+
+flex_anchors <- FindTransferAnchors(
+  reference = flex_ref,
+  query = GBM,
+  normalization.method = "SCT",
+  reference.assay = "SCT",
+  query.assay = "SCT",
+  features = anchor_features,
+  dims = 1:30
+)
+
+flex_labels <- setNames(as.character(flex_ref$bc3_cluster), colnames(flex_ref))
+
+GBM_flex <- GBM
+GBM_flex[["flexscores"]] <- TransferData(
+  anchorset = flex_anchors,
+  refdata = flex_labels,
+  prediction.assay = TRUE,
+  weight.reduction = GBM[["pca"]],
+  dims = 1:30
+)
+```
+
+#### Map the scores and compare Visium clusters 1, 14 and 12
+
+```{r gbm-flex-spot-maps, fig.width=13, fig.height=9, message=FALSE}
+scores <- SeuratObject::LayerData(
+  GBM_flex, assay = "flexscores", layer = "data"
+)
+
+map_features <- intersect(
+  c("BC3-04", "BC3-05", "BC3-07", "BC3-08", "BC3-09", "BC3-12"),
+  rownames(scores)
+)
+
+if (length(map_features) == 0L) {
+  stop("Check the feature names in the flexscores assay.")
+}
+
+DefaultAssay(GBM_flex) <- "flexscores"
+
+SpatialFeaturePlot(
+  GBM_flex,
+  features = map_features,
+  keep.scale = "all",
+  ncol = 3,
+  pt.size.factor = 2.5,
+  image.alpha = 0.55
+)
+
+DefaultAssay(GBM_flex) <- "SCT"
+
+spot_cluster <- setNames(
+  as.character(GBM_flex$seurat_clusters),
+  colnames(GBM_flex)
+)
+spot_cluster <- spot_cluster[colnames(scores)]
+target_clusters <- intersect(c("1", "14", "12"), unique(spot_cluster))
+
+mean_transfer_scores <- sapply(target_clusters, function(k) {
+  Matrix::rowMeans(scores[map_features, spot_cluster == k, drop = FALSE])
+})
+
+round(mean_transfer_scores, 3)
+```
+
+
+### Single-cell reference UMAP
+
+```{r gbm-flex-reference-umap, fig.width=8, fig.height=6}
+flex_ref <- SCTransform(
+  flex_ref, assay = "RNA", ncells = 3000, verbose = FALSE
+)
+flex_ref <- RunPCA(flex_ref, assay = "SCT", verbose = FALSE)
+flex_ref <- RunUMAP(flex_ref, dims = 1:30)
+
+DimPlot(
+  flex_ref,
+  reduction = "umap",
+  group.by = "bc3_cluster",
+  label = TRUE
+)
+```
+
