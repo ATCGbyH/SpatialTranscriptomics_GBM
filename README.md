@@ -34,12 +34,15 @@ Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and 
 
 ### Collagen enrichment and hypoxia
 
-Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement in gene rankings based on cluster-average SCT residuals (Spearman ρ = 0.571). High scores for a hypoxia-associated panel that included *CA9*, *VEGFA* and *HILPDA* overlapped cluster 7.
+Clusters 5 and 9 shared elevated expression of *COL1A1*, *COL1A2* and *COL3A1*. Their broader gene rankings showed moderate agreement based on cluster-average SCT residuals (Spearman ρ = 0.571). The collagen profiles still differed within that shared programme. For example, *COL6A3* was detected in **88.7% of cluster 5 spots** and **45.7% of cluster 9 spots** in the marker analysis.
 
-<img src="https://i.postimg.cc/zvtZ93Dw/GBM-Top5-Marker-Heatmap.png" height="100%" width="100%" alt="Workflow Chart"/>
+<img src="https://i.postimg.cc/zvtZ93Dw/GBM-Top5-Marker-Heatmap.png" width="80%" alt="Top marker genes across glioblastoma spot clusters"/>
 
-The collagen signal is consistent with extracellular matrix remodelling. Comparing the collagen and hypoxia maps with the matched H&E image would help assess whether either pattern is associated with necrosis in this GBM section.
+High scores for the hypoxia-associated panel overlapped cluster 7. The individual markers supported this pattern. *CA9* was detected in **80.3% of cluster 7 spots** compared with **7.9% of spots outside cluster 7**. *HILPDA* was detected in **98.0%** and **28.3%**, respectively. The panel also included *CA12*, *ANGPTL4* and *VEGFA*.
 
+<img src="https://i.postimg.cc/jdY26h8J/spatial-gene-programs.png" width="80%" alt="Spatial maps of collagen, hypoxia and other GBM-associated gene programmes"/>
+
+The collagen-associated expression is consistent with extracellular matrix remodelling. Spatial studies have identified collagen-rich regions around vessels in recurrent GBM and linked hypoxia-associated expression to tissue organisation around necrotic cores (Onubogu et al., 2024; Greenwald et al., 2024). Reviewing the matched H&E alongside the score maps would help assess whether the collagen-enriched spots lie near vessels or necrotic borders, and whether the cluster 7 signal overlaps tissue surrounding necrosis.
 <img src="https://i.postimg.cc/jdY26h8J/spatial-gene-programs.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 ### Shared myelin signal (Cluster 1 and 14) and divergence in cluster 12
