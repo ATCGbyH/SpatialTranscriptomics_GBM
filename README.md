@@ -58,7 +58,7 @@ Within the *MBP*-high subset, clusters 1, 14 and 12 had similar median *PLP1/MOG
 
 Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for monocyte- and macrophage-associated genes (*CD14*, *CD163*) and complement-associated genes (*C1QA*, *VSIG4*). For example, the mean *CD163* residual was −1.67 in cluster 12, compared with +2.64 in cluster 1 and +3.12 in cluster 14. The agreement across these genes is consistent with a stronger myeloid-associated RNA signal in clusters 1 and 14 (Miller et al., 2025).
 
-*KIF5A* showed the opposite pattern. Its mean SCT residual was +1.80 in cluster 12 and negative in both clusters 1 and 14. Given the role of *KIF5A* in axonal transport, this pattern is compatible with a greater neuronal RNA contribution in cluster 12 (Guerra San Juan et al., 2024). Joyce and Lindsay (2024) also reported an inverse association between *KIF5A* expression and glioma grade in a separate cohort analysis.
+*KIF5A* showed the opposite pattern. Its mean SCT residual was +1.80 in cluster 12 and negative in both clusters 1 and 14. Given the role of *KIF5A* in axonal transport, this pattern is compatible with a greater neuronal RNA contribution in cluster 12. Joyce and Lindsay (2024) also reported an inverse association between *KIF5A* expression and glioma grade in a separate cohort analysis.
 
 <img src="https://i.postimg.cc/GtW2ZMm5/GBM-Cluster-12-Comparison-Numbered.png" height="80%" width="80%" alt="Workflow Chart"/>
 
@@ -81,8 +81,6 @@ These differences could also merely reflect variation in cell composition or tra
 · Joyce, L.J. and Lindsay, A.J. (2024) ‘A systematic computational analysis of the endosomal recycling pathway in glioblastoma’, Biochemistry and Biophysics Reports, 38, p. 101700. https://pubmed.ncbi.nlm.nih.gov/38638676/
 
 · Miller, T.E. et al. (2025) ‘Programs, origins and immunomodulatory functions of myeloid cells in glioma’, Nature, 640(8060), pp. 1072–1082. https://www.nature.com/articles/s41586-025-08633-8
-
-· Guerra San Juan, I. et al. (2024) Kif5a regulates axonal repair and time-dependent axonal transport of SFPQ granules and mitochondria in human motor neurons [Preprint]. https://doi.org/10.1101/2024.09.06.611684
 
 · Greenwald, A.C. et al. (2024). ‘Integrative spatial analysis reveals a multi-layered organization of glioblastoma’. *Cell*, 187(10), pp. 2485–2501.e26. https://doi.org/10.1016/j.cell.2024.03.029
   
