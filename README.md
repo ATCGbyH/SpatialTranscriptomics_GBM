@@ -2,9 +2,9 @@
 
 This project uses 10x Visium CytAssist and Seurat to map gene expression across a human glioblastoma (GBM) tissue section. It compares collagen- and hypoxia-associated regions and asks how similar three *MBP*-rich spot clusters are across their broader expression profiles.
 
-[Open the R notebook in PDF for visualisation](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.pdf) · [View the R Markdown source](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.Rmd)
+· [View the R Markdown source](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.Rmd)
 
-The notebook contains the complete analysis and figures. For a local preview, download and open [HTML R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.html) in a browser.
+The notebook contains the complete analysis and figures. For a local preview, download and open [HTML R notebook](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.html) in a browser, or [Open the R notebook in PDF](https://github.com/ATCGbyH/SpatialTranscriptomics_Seurat_GBM/blob/main/GBM_Spatial_Seurat.pdf).
 
 <img src="https://i.postimg.cc/PJHHk6PN/GBM-Findings-Summary.png" height="80%" width="80%" alt="Workflow Chart"/>
 
