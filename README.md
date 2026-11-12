@@ -76,7 +76,7 @@ Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for monoc
 
 This could be a good explanation on why these clusters may be from the specific cell type, although, with a high chance of a GBM tumour being slowly forming within cluster 1 and 14, while cluster 12 cells demonstrate to be closely within healthy states.
 
-Another major factor that may indicate this is the highly expression of CD14 and CD163 cells within cluster 1 and 14, indicating direct activity of immune system in this region and possibly part of a forming GBM. 
+Another major factor that may indicate this is the highly expression of CD14 and CD163 cells within cluster 1 and 14, indicating direct activity of immune system in this region. 
 
 The three clusters therefore had similar myelin module scores within the *MBP*-high subset, alongside differences in myeloid- and neuronal-associated signals across their broader spot profiles. These differences could reflect variation in the cell types captured by each Visium spot, changes in their transcriptional states, or both.
 
