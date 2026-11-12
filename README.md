@@ -36,7 +36,7 @@ Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and 
 
 Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement in gene rankings based on cluster-average SCT residuals (Spearman ρ = 0.571). High scores for a hypoxia-associated panel that included *CA9*, *VEGFA* and *HILPDA* overlapped cluster 7.
 
-<img src="https://i.postimg.cc/rFjKw9zL/GBM-Top5-Marker-Heatmap.png" height="100%" width="100%" alt="Workflow Chart"/>
+<img src="https://i.postimg.cc/zvtZ93Dw/GBM-Top5-Marker-Heatmap.png" height="100%" width="100%" alt="Workflow Chart"/>
 
 The collagen signal is consistent with extracellular matrix remodelling. Comparing the collagen and hypoxia maps with the matched H&E image would help assess whether either pattern is associated with necrosis in this GBM section.
 
