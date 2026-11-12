@@ -36,7 +36,7 @@ Clusters 1 and 14 occupy neighbouring areas in the upper-left of the tissue and 
 
 Clusters 5 and 9 showed elevated collagen-gene expression and moderate agreement in gene rankings based on cluster-average SCT residuals (Spearman ρ = 0.571). High scores for a hypoxia-associated panel that included *CA9*, *VEGFA* and *HILPDA* overlapped cluster 7.
 
-<img src="https://i.postimg.cc/s1d1Gn7y/GBM-Cluster-12-Comparison-Numbered.png" height="80%" width="80%" alt="Workflow Chart"/>
+<img src="HERE" height="80%" width="80%" alt="Workflow Chart"/>
 
 The collagen signal is consistent with extracellular matrix remodelling. Comparing the collagen and hypoxia maps with the matched H&E image would help assess whether either pattern is associated with necrosis in this GBM section.
 
@@ -58,7 +58,7 @@ Relative to clusters 1 and 14, cluster 12 had lower mean SCT residuals for monoc
 
 *KIF5A* showed the opposite pattern. Its mean SCT residual was +1.80 in cluster 12 and negative in both clusters 1 and 14. Given the role of *KIF5A* in axonal transport, this pattern is compatible with a greater neuronal RNA contribution in cluster 12 (Guerra San Juan et al., 2024). Joyce and Lindsay (2024) also reported an inverse association between *KIF5A* expression and glioma grade in a separate cohort analysis.
 
-<img src="https://i.postimg.cc/br5QLVvb/GBM-Cluster-12-Comparison.png" height="80%" width="80%" alt="Workflow Chart"/>
+<img src="https://i.postimg.cc/s1d1Gn7y/GBM-Cluster-12-Comparison-Numbered.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 This could be a good explanation on why these clusters may be from the specific cell type, although, with a high chance of a GBM tumour being slowly forming within cluster 1 and 14, while cluster 12 cells demonstrate to be closely within healthy states.
 
