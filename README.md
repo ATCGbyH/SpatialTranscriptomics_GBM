@@ -84,4 +84,8 @@ These differences could also merely reflect variation in cell composition or tra
 
 · Guerra San Juan, I. et al. (2024) Kif5a regulates axonal repair and time-dependent axonal transport of SFPQ granules and mitochondria in human motor neurons [Preprint]. doi:10.1101/2024.09.06.611684. 
 
+· Greenwald, A.C. et al. (2024). ‘Integrative spatial analysis reveals a multi-layered organization of glioblastoma’. *Cell*, 187(10), pp. 2485–2501.e26. https://doi.org/10.1016/j.cell.2024.03.029
+  
+· Onubogu, U. et al. (2024). ‘Spatial analysis of recurrent glioblastoma reveals perivascular niche organization’. *JCI Insight*, 9(12), e179853.https://doi.org/10.1172/jci.insight.179853
+
 *Analysis by Hugo Roca*
