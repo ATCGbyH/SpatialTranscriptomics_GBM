@@ -43,6 +43,7 @@ High scores for the hypoxia-associated panel overlapped cluster 7. The individua
 <img src="https://i.postimg.cc/jdY26h8J/spatial-gene-programs.png" width="80%" alt="Spatial maps of collagen, hypoxia and other GBM-associated gene programmes"/>
 
 The collagen-associated expression is consistent with extracellular matrix remodelling. Spatial studies have identified collagen-rich regions around vessels in recurrent GBM and linked hypoxia-associated expression to tissue organisation around necrotic cores (Onubogu et al., 2024; Greenwald et al., 2024). Reviewing the matched H&E alongside the score maps would help assess whether the collagen-enriched spots lie near vessels or necrotic borders, and whether the cluster 7 signal overlaps tissue surrounding necrosis.
+
 <img src="https://i.postimg.cc/jdY26h8J/spatial-gene-programs.png" height="80%" width="80%" alt="Workflow Chart"/>
 
 ### Shared myelin signal (Cluster 1 and 14) and divergence in cluster 12
